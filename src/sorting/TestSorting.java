@@ -69,12 +69,17 @@ public class TestSorting {
                 String s2 = ((StringBuilder) o2).toString();
                 String [] array1 = s1.split(" ");
                 String [] array2 = s2.split(" ");
-                if(array1[number-1].equals(array2[number-1])) {
-                    changeSuffix((StringBuilder) o1);
-                    changeSuffix((StringBuilder) o2);
+                try {
+                    if (array1[number - 1].equals(array2[number - 1])) {
+                        changeSuffix((StringBuilder) o1);
+                       changeSuffix((StringBuilder) o2);
+                        return 0;
+                    } else {
+                        return array1[number - 1].compareTo(array2[number - 1]);
+                    }
+                }catch (IndexOutOfBoundsException e) {
+                    System.out.println("Упс, кажется, число слишком большое. В нашей строке нет столько слов");
                     return 0;
-                } else {
-                    return array1[number-1].compareTo(array2[number-1]);
                 }
             }
         };
@@ -90,29 +95,7 @@ public class TestSorting {
                 return s1.compareTo(s2);
             }
         };
-//        List<String[]> listOfArrays = new ArrayList<>();
-//        List<String> resultList = new ArrayList<>();
-//        for(String s : stringList) {
-//            String [] array = s.split(" ");
-//            listOfArrays.add(array);
-//        }
-//        for(int i = 0; i < listOfArrays.size(); i++) {
-//            int outerCounter = 0;
-//            for(int j = 0; j < listOfArrays.size(); j++) {
-//
-//                if(listOfArrays.get(i)[number-1].equals(listOfArrays.get(j)[number-1])) {
-//                    outerCounter++; }
-//            }
-//
-//            StringBuilder stringBuilder = new StringBuilder(stringList.get(i));
-//            stringBuilder.append(" " + outerCounter);
-//            resultList.add(stringBuilder.toString());
-//        }
-//        resultList = resultList.stream()
-//                .map(s->reverse(s))
-//                .sorted()
-//                .map(s->reverse(s))
-//                .collect(toList());
+
         Collections.sort(stringBuilders, comparator1);
         Collections.sort(stringBuilders, comparator2);
        // Collections.reverse(stringBuilders); //порядок от большего числа вхождений к меньшему
@@ -120,14 +103,10 @@ public class TestSorting {
         return stringList;
     }
 
-    private String reverse(String d){
-        return new StringBuilder(d).reverse().toString();
-    }
-
     private int getNumberFromConsole() {
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int number;
-            System.out.println("Введите число от 1 до 10");
+            System.out.println("Введите число от 1 до 9");
             String s = reader.readLine();
             try {
                 number = Integer.parseInt(s);
@@ -165,5 +144,28 @@ public class TestSorting {
             stringBuilder.append(" " + i);
         }
     }
+    //не используется
+    private void countInputQuantity(List<StringBuilder> list, int number) {
+        List<String[]> listOfArrays = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
+        for(StringBuilder b : list) {
+            String s = b.toString();
+            String [] array = s.split(" ");
+            listOfArrays.add(array);
+        }
+        for(int i = 0; i < listOfArrays.size(); i++) {
+            int outerCounter = 0;
+            for(int j = 0; j < listOfArrays.size(); j++) {
+
+                if(listOfArrays.get(i)[number-1].equals(listOfArrays.get(j)[number-1])) {
+                    outerCounter++; }
+            }
+
+            StringBuilder stringBuilder = new StringBuilder(list.get(i));
+            stringBuilder.append(" " + outerCounter);
+            resultList.add(stringBuilder.toString());
+        }
+    }
+
 
 }
