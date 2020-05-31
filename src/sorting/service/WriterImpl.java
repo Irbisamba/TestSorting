@@ -15,6 +15,7 @@ public class WriterImpl implements Writer {
         }
     }
 
+    @Override
     public void writeBuilder(List<StringBuilder> entities, String fileName) {
         try{
             Files.write(Paths.get(fileName), entities);

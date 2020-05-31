@@ -15,9 +15,9 @@ public class TestSorting {
     public static void main(String[] args) throws IOException {
         TestSorting testSorting  = new TestSorting();
 
-        List<String> firstSorting = testSorting.sortByNaturalOrdering("file.txt", "sorted1.txt");
-        List<String> secondSorting = testSorting.sortByStringLenght("file.txt", "sorted2.txt");
-        List<String> thirddSorting = testSorting.sortByQuantityInput("file.txt", "sorted3.txt");
+        testSorting.sortByNaturalOrdering("file.txt", "sorted1.txt");
+        testSorting.sortByStringLenght("file.txt", "sorted2.txt");
+        testSorting.sortByQuantityInput("file.txt", "sorted3.txt");
 
     }
     public List<String> sortByNaturalOrdering(String fileFrom, String fileTo) {
@@ -33,18 +33,10 @@ public class TestSorting {
         LoaderImpl loader = new LoaderImpl();
         WriterImpl writer = new WriterImpl();
         List<String> stringList = loader.load(fileFrom);
-        Comparator comparator = new Comparator() {
+        Comparator<String> comparator = new Comparator<String>() {
             @Override
-            public int compare(Object o1, Object o2) {
-                String s1 = (String) o1;
-                String s2 = (String) o2;
-                if(s1.length()==s2.length())
-                    return 0;
-                if(s1.length()>s2.length())
-                    return 1;
-                if(s1.length()<s2.length())
-                    return -1;
-                return 0;
+            public int compare(String s1, String s2) {
+                return Integer.valueOf(s1.length()).compareTo(s2.length());
             }
         };
         Collections.sort(stringList, comparator);
@@ -62,20 +54,24 @@ public class TestSorting {
             stringBuilders.add(new StringBuilder(s).append(" 1"));
         }
 
-        Comparator<StringBuilder> comparator1 = new Comparator() {
+        Comparator<StringBuilder> comparator1 = new Comparator<StringBuilder>() {
             @Override
-            public int compare(Object o1, Object o2) {
-                String s1 = ((StringBuilder) o1).toString();
-                String s2 = ((StringBuilder) o2).toString();
+            public int compare(StringBuilder o1, StringBuilder o2) {
+                String s1 = o1.toString();
+                String s2 = o2.toString();
                 String [] array1 = s1.split(" ");
                 String [] array2 = s2.split(" ");
                 try {
+                    if(number<=array1.length-1&&number<=array2.length-1){
                     if (array1[number - 1].equals(array2[number - 1])) {
                         changeSuffix((StringBuilder) o1);
-                       changeSuffix((StringBuilder) o2);
+                        changeSuffix((StringBuilder) o2);
                         return 0;
                     } else {
                         return array1[number - 1].compareTo(array2[number - 1]);
+                    } }
+                    else {
+                        throw new IndexOutOfBoundsException();
                     }
                 }catch (IndexOutOfBoundsException e) {
                     System.out.println("Упс, кажется, число слишком большое. В нашей строке нет столько слов");
