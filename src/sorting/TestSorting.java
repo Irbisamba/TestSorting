@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TestSorting {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         TestSorting testSorting  = new TestSorting();
 
         testSorting.sortByNaturalOrdering("file.txt", "sorted1.txt");
@@ -33,18 +33,13 @@ public class TestSorting {
         LoaderImpl loader = new LoaderImpl();
         WriterImpl writer = new WriterImpl();
         List<String> stringList = loader.load(fileFrom);
-        Comparator<String> comparator = new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                return Integer.valueOf(s1.length()).compareTo(s2.length());
-            }
-        };
-        Collections.sort(stringList, comparator);
+        Comparator<String> comparator = Comparator.comparingInt(String::length);
+        stringList.sort(comparator);
         writer.write(stringList, fileTo);
         return stringList;
     }
 
-    public List<String> sortByQuantityInput(String fileFrom, String fileTo) throws IOException {
+    public List<String> sortByQuantityInput(String fileFrom, String fileTo) {
         int number = getNumberFromConsole();
         LoaderImpl loader = new LoaderImpl();
         WriterImpl writer = new WriterImpl();
@@ -54,46 +49,41 @@ public class TestSorting {
             stringBuilders.add(new StringBuilder(s).append(" 1"));
         }
 
-        Comparator<StringBuilder> comparator1 = new Comparator<StringBuilder>() {
-            @Override
-            public int compare(StringBuilder o1, StringBuilder o2) {
-                String s1 = o1.toString();
-                String s2 = o2.toString();
-                String [] array1 = s1.split(" ");
-                String [] array2 = s2.split(" ");
-                try {
-                    if(number<=array1.length-1&&number<=array2.length-1){
-                    if (array1[number - 1].equals(array2[number - 1])) {
-                        changeSuffix((StringBuilder) o1);
-                        changeSuffix((StringBuilder) o2);
-                        return 0;
-                    } else {
-                        return array1[number - 1].compareTo(array2[number - 1]);
-                    } }
-                    else {
-                        throw new IndexOutOfBoundsException();
-                    }
-                }catch (IndexOutOfBoundsException e) {
-                    System.out.println("Упс, кажется, число слишком большое. В нашей строке нет столько слов");
+        Comparator<StringBuilder> comparator1 = (o1, o2) -> {
+            String s1 = o1.toString();
+            String s2 = o2.toString();
+            String [] array1 = s1.split(" ");
+            String [] array2 = s2.split(" ");
+            try {
+                if(number<=array1.length-1&&number<=array2.length-1){
+                if (array1[number - 1].equals(array2[number - 1])) {
+                    changeSuffix(o1);
+                    changeSuffix(o2);
                     return 0;
+                } else {
+                    return array1[number - 1].compareTo(array2[number - 1]);
+                } }
+                else {
+                    throw new IndexOutOfBoundsException();
                 }
-            }
-        };
-        Comparator<StringBuilder> comparator2 = new Comparator<StringBuilder>() {
-            @Override
-            public int compare(StringBuilder o1, StringBuilder o2) {
-                StringBuilder rev1 = o1.reverse();
-                String s1 = rev1.toString();
-                StringBuilder rev2 = o2.reverse();
-                String s2 = rev2.toString();
-                o1.reverse();
-                o2.reverse();
-                return s1.compareTo(s2);
+            }catch (IndexOutOfBoundsException e) {
+                System.out.println("Упс, кажется, число слишком большое. В нашей строке нет столько слов");
+                return 0;
             }
         };
 
-        Collections.sort(stringBuilders, comparator1);
-        Collections.sort(stringBuilders, comparator2);
+        Comparator<StringBuilder> comparator2 = (o1, o2) -> {
+            StringBuilder rev1 = o1.reverse();
+            String s1 = rev1.toString();
+            StringBuilder rev2 = o2.reverse();
+            String s2 = rev2.toString();
+            o1.reverse();
+            o2.reverse();
+            return s1.compareTo(s2);
+        };
+
+        stringBuilders.sort(comparator1);
+        stringBuilders.sort(comparator2);
        // Collections.reverse(stringBuilders); //порядок от большего числа вхождений к меньшему
         writer.writeBuilder(stringBuilders, fileTo);
         return stringList;
@@ -132,36 +122,12 @@ public class TestSorting {
             i = Integer.parseInt(suff);
             i++;
         } catch(NumberFormatException e) {
-
+            e.printStackTrace();
         } finally {
             int index = stringBuilder.lastIndexOf(suff);
             stringBuilder.deleteCharAt(index);
             stringBuilder.trimToSize();
-            stringBuilder.append(" " + i);
+            stringBuilder.append(" ").append(i);
         }
     }
-    //не используется
-    private void countInputQuantity(List<StringBuilder> list, int number) {
-        List<String[]> listOfArrays = new ArrayList<>();
-        List<String> resultList = new ArrayList<>();
-        for(StringBuilder b : list) {
-            String s = b.toString();
-            String [] array = s.split(" ");
-            listOfArrays.add(array);
-        }
-        for(int i = 0; i < listOfArrays.size(); i++) {
-            int outerCounter = 0;
-            for(int j = 0; j < listOfArrays.size(); j++) {
-
-                if(listOfArrays.get(i)[number-1].equals(listOfArrays.get(j)[number-1])) {
-                    outerCounter++; }
-            }
-
-            StringBuilder stringBuilder = new StringBuilder(list.get(i));
-            stringBuilder.append(" " + outerCounter);
-            resultList.add(stringBuilder.toString());
-        }
-    }
-
-
 }
